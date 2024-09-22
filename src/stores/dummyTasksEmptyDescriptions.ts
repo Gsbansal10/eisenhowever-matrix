@@ -1,7 +1,7 @@
 export interface Task {
     id: string;
     title: string;
-    description: string;
+    description: string; // Description is kept as an empty string
     dateCreated: Date;
     dateCompleted: Date | null;
     quadrant: string;
@@ -10,12 +10,12 @@ export interface Task {
     isSelected: boolean; // Added isSelected property
 }
 
-export const dummyTasks: Task[] = [
+export const dummyTasksEmptyDescriptions: Task[] = [
     // Quadrant 1: Urgent and Important
     {
         id: "1",
         title: "Finish project report",
-        description: "Complete the final report for the project.",
+        description: "", // Empty description
         dateCreated: new Date(2023, 9, 1), // Unique date
         dateCompleted: null,
         quadrant: "one",
@@ -26,8 +26,7 @@ export const dummyTasks: Task[] = [
     {
         id: "2",
         title: "Prepare for presentation",
-        description:
-            "Prepare slides and practice for the upcoming presentation.",
+        description: "", // Empty description
         dateCreated: new Date(2023, 9, 2), // Unique date
         dateCompleted: null,
         quadrant: "one",
@@ -38,8 +37,7 @@ export const dummyTasks: Task[] = [
     {
         id: "3",
         title: "Submit tax documents",
-        description:
-            "Gather and submit all necessary tax documents before the deadline.",
+        description: "", // Empty description
         dateCreated: new Date(2023, 9, 3), // Unique date
         dateCompleted: null,
         quadrant: "one",
@@ -50,7 +48,7 @@ export const dummyTasks: Task[] = [
     {
         id: "4",
         title: "Respond to client emails",
-        description: "Reply to urgent client emails regarding project updates.",
+        description: "", // Empty description
         dateCreated: new Date(2023, 9, 4), // Unique date
         dateCompleted: null,
         quadrant: "one",
@@ -61,8 +59,7 @@ export const dummyTasks: Task[] = [
     {
         id: "5",
         title: "Schedule team meeting",
-        description:
-            "Organize a meeting to discuss project progress and next steps.",
+        description: "", // Empty description
         dateCreated: new Date(2023, 9, 5), // Unique date
         dateCompleted: null,
         quadrant: "one",
@@ -75,7 +72,7 @@ export const dummyTasks: Task[] = [
     {
         id: "6",
         title: "Plan next quarter goals",
-        description: "Set goals and objectives for the next quarter.",
+        description: "", // Empty description
         dateCreated: new Date(2023, 9, 6), // Unique date
         dateCompleted: null,
         quadrant: "two",
@@ -86,7 +83,7 @@ export const dummyTasks: Task[] = [
     {
         id: "7",
         title: "Attend professional development workshop",
-        description: "Participate in a workshop to enhance skills.",
+        description: "", // Empty description
         dateCreated: new Date(2023, 9, 7), // Unique date
         dateCompleted: null,
         quadrant: "two",
@@ -97,7 +94,7 @@ export const dummyTasks: Task[] = [
     {
         id: "8",
         title: "Read industry-related book",
-        description: "Read a book to gain insights into industry trends.",
+        description: "", // Empty description
         dateCreated: new Date(2023, 9, 8), // Unique date
         dateCompleted: null,
         quadrant: "two",
@@ -108,7 +105,7 @@ export const dummyTasks: Task[] = [
     {
         id: "9",
         title: "Network with industry professionals",
-        description: "Reach out to professionals for networking opportunities.",
+        description: "", // Empty description
         dateCreated: new Date(2023, 9, 9), // Unique date
         dateCompleted: null,
         quadrant: "two",
@@ -119,8 +116,7 @@ export const dummyTasks: Task[] = [
     {
         id: "10",
         title: "Develop a personal brand strategy",
-        description:
-            "Create a strategy for personal branding and online presence.",
+        description: "", // Empty description
         dateCreated: new Date(2023, 9, 10), // Unique date
         dateCompleted: null,
         quadrant: "two",
@@ -133,7 +129,7 @@ export const dummyTasks: Task[] = [
     {
         id: "11",
         title: "Respond to non-urgent emails",
-        description: "Reply to emails that are not time-sensitive.",
+        description: "", // Empty description
         dateCreated: new Date(2023, 9, 11), // Unique date
         dateCompleted: null,
         quadrant: "three",
@@ -144,7 +140,7 @@ export const dummyTasks: Task[] = [
     {
         id: "12",
         title: "Schedule routine maintenance",
-        description: "Set up maintenance for office equipment.",
+        description: "", // Empty description
         dateCreated: new Date(2023, 9, 12), // Unique date
         dateCompleted: null,
         quadrant: "three",
@@ -155,7 +151,7 @@ export const dummyTasks: Task[] = [
     {
         id: "13",
         title: "Order office supplies",
-        description: "Restock necessary office supplies before they run out.",
+        description: "", // Empty description
         dateCreated: new Date(2023, 9, 13), // Unique date
         dateCompleted: null,
         quadrant: "three",
@@ -166,7 +162,7 @@ export const dummyTasks: Task[] = [
     {
         id: "14",
         title: "Attend a webinar",
-        description: "Join a webinar that is interesting but not critical.",
+        description: "", // Empty description
         dateCreated: new Date(2023, 9, 14), // Unique date
         dateCompleted: null,
         quadrant: "three",
@@ -177,7 +173,7 @@ export const dummyTasks: Task[] = [
     {
         id: "15",
         title: "Check social media updates",
-        description: "Review and respond to social media interactions.",
+        description: "", // Empty description
         dateCreated: new Date(2023, 9, 15), // Unique date
         dateCompleted: null,
         quadrant: "three",
@@ -190,7 +186,7 @@ export const dummyTasks: Task[] = [
     {
         id: "16",
         title: "Watch a movie",
-        description: "Enjoy a movie for relaxation.",
+        description: "", // Empty description
         dateCreated: new Date(2023, 9, 16), // Unique date
         dateCompleted: null,
         quadrant: "four",
@@ -201,7 +197,7 @@ export const dummyTasks: Task[] = [
     {
         id: "17",
         title: "Organize personal files",
-        description: "Sort and organize personal documents and files.",
+        description: "", // Empty description
         dateCreated: new Date(2023, 9, 17), // Unique date
         dateCompleted: null,
         quadrant: "four",
@@ -212,7 +208,7 @@ export const dummyTasks: Task[] = [
     {
         id: "18",
         title: "Browse online shopping",
-        description: "Look for items to purchase online.",
+        description: "", // Empty description
         dateCreated: new Date(2023, 9, 18), // Unique date
         dateCompleted: null,
         quadrant: "four",
@@ -223,7 +219,7 @@ export const dummyTasks: Task[] = [
     {
         id: "19",
         title: "Plan a weekend trip",
-        description: "Research and plan a short trip for the weekend.",
+        description: "", // Empty description
         dateCreated: new Date(2023, 9, 19), // Unique date
         dateCompleted: null,
         quadrant: "four",
@@ -234,7 +230,7 @@ export const dummyTasks: Task[] = [
     {
         id: "20",
         title: "Try a new recipe",
-        description: "Experiment with a new recipe for dinner.",
+        description: "", // Empty description
         dateCreated: new Date(2023, 9, 20), // Unique date
         dateCompleted: null,
         quadrant: "four",

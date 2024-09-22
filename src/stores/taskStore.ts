@@ -1,22 +1,24 @@
 import { defineStore } from "pinia";
-import { computed, watch, ref } from "vue";
+import { computed, ref } from "vue";
 // import { useLocalStorage } from "@vueuse/core";
-import { dummyTasks } from "./dummyTasks";
+import { dummyTasks, type Task } from "./dummyTasks";
+import { dummyTasksEmptyDescriptions } from "./dummyTasksEmptyDescriptions";
 
-interface Task {
-    id: string;
-    title: string;
-    description: string;
-    dateCreated: Date;
-    dateCompleted: Date | null;
-    quadrant: string;
-    priority: number;
-    isCompleted: boolean;
-}
+// interface Task {
+//     id: string;
+//     title: string;
+//     description: string;
+//     dateCreated: Date;
+//     dateCompleted: Date | null;
+//     quadrant: string;
+//     priority: number;
+//     isCompleted: boolean;
+// }
 
 export const useTaskStore = defineStore("task", () => {
     // const tasks = useLocalStorage<Task[]>("eisenhower-tasks", dummyTasks);
-    const tasks = ref<Task[]>(dummyTasks);
+    // const tasks = ref<Task[]>(dummyTasks);
+    const tasks = ref<Task[]>(dummyTasksEmptyDescriptions);
     const addTask = (
         task: Omit<Task, "id" | "dateCreated" | "quadrant">,
         quadrant: string = "four",
@@ -28,16 +30,7 @@ export const useTaskStore = defineStore("task", () => {
             quadrant: quadrant,
         };
         tasks.value.push(newTask);
-        console.log(tasks.value);
     };
-
-    watch(
-        tasks,
-        (newTasks) => {
-            console.log("Tasks have been updated:", newTasks);
-        },
-        { deep: true },
-    );
 
     const updateTask = (updatedTask: Task) => {
         const index = tasks.value.findIndex(

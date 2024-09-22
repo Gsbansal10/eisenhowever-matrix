@@ -80,8 +80,12 @@ body {
         "Helvetica Neue",
         sans-serif;
     font-size: 15px;
-    /* align-content: center; */
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+}
+
+#app {
+    width: min(calc(100% - 2rem), 1000px);
+    margin: 0 auto;
 }
