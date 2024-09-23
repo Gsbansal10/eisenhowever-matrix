@@ -46,9 +46,13 @@ export const useTaskStore = defineStore("task", () => {
     };
 
     const moveTask = (taskId: string, newQuadrant: string) => {
-        const task = tasks.value.find((task) => task.id === taskId);
-        if (task) {
+        const taskIndex = tasks.value.findIndex(task => task.id === taskId);
+        if (taskIndex !== -1) {
+            const task = tasks.value[taskIndex];
             task.quadrant = newQuadrant;
+            // Remove the task from its current position and add it to the beginning of the array
+            tasks.value.splice(taskIndex, 1);
+            tasks.value.unshift(task);
         }
     };
 

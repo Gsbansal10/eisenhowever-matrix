@@ -6,9 +6,10 @@
     >
         <transition-group name="fade" tag="div" mode="out-in">
             <TaskItem
-                v-for="task in sortedTasks"
+                v-for="(task, index) in sortedTasks"
                 :key="task.id"
                 :task="task"
+                :index="index"
                 @toggleCompletion="toggleTaskCompletion"
                 @toggleSelectedTask="toggleSelectedTask"
                 :isSelected="task.isSelected"
@@ -60,7 +61,6 @@ const toggleSelectedTask = (task) => {
 };
 
 const handleKeyDown = (event) => {
-    event.preventDefault();
     if (!selectedTask.value || !event.metaKey) return;
 
     const currentQuadrant = selectedTask.value.quadrant;
@@ -68,18 +68,22 @@ const handleKeyDown = (event) => {
 
     switch (event.key) {
         case "ArrowUp":
+            event.preventDefault();
             if (currentQuadrant === "three") newQuadrant = "one";
             if (currentQuadrant === "four") newQuadrant = "two";
             break;
         case "ArrowDown":
+            event.preventDefault();
             if (currentQuadrant === "one") newQuadrant = "three";
             if (currentQuadrant === "two") newQuadrant = "four";
             break;
         case "ArrowLeft":
+            event.preventDefault();
             if (currentQuadrant === "two") newQuadrant = "one";
             if (currentQuadrant === "four") newQuadrant = "three";
             break;
         case "ArrowRight":
+            event.preventDefault();
             if (currentQuadrant === "one") newQuadrant = "two";
             if (currentQuadrant === "three") newQuadrant = "four";
             break;

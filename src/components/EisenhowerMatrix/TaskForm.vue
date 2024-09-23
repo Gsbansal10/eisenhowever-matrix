@@ -1,7 +1,6 @@
 <template>
     <div
         class="group cursor-pointer select-none items-center border-b-[1px] border-gray-200 px-4 py-2 transition duration-200 hover:bg-gray-500 hover:bg-opacity-10"
-        @keydown.esc.prevent.stop="closeForm"
     >
         <form @submit.prevent.stop="addTask">
             <input
@@ -13,24 +12,14 @@
                 maxlength="100"
                 required
             />
-            <!-- <p
-                @click.stop="showDescriptionField"
-                class="cursor-pointer px-2 py-1 text-[12px] text-gray-500 hover:bg-gray-200 hover:bg-opacity-20"
-                v-if="!showDescription"
-            >
-                Add Description?
-            </p> -->
             <textarea
-                v-if="showDescription"
                 v-model="taskDescription"
                 ref="taskDescriptionTextarea"
                 placeholder="Description (optional)"
                 class="w-full resize-none bg-transparent px-2 py-1 text-[12px] text-gray-500 focus:outline-none"
                 maxlength="1024"
-                @keydown.enter.prevent="addTask"
                 rows="1"
             ></textarea>
-            <!-- </form> -->
             <div class="flex justify-end gap-1">
                 <button
                     type="submit"
@@ -69,7 +58,6 @@ const taskTitle = ref("");
 const taskDescription = ref("");
 const priority = ref(0);
 const isCompleted = ref(false);
-const showDescription = ref(true);
 const props = defineProps({
     quadrant: {
         type: String,
@@ -79,6 +67,7 @@ const props = defineProps({
         type: Boolean,
         required: false,
     },
+
 });
 
 const addTask = () => {
@@ -99,12 +88,10 @@ const addTask = () => {
     };
     taskStore.addTask(task, props.quadrant);
     resetForm();
-    // closeForm();
 };
 
 const handleEscape = (e) => {
     if (e.key === "Escape") {
-        console.log("Escape key pressed");
         closeForm();
     }
 };
@@ -113,7 +100,7 @@ const taskTitleInput = ref(null);
 const taskDescriptionTextarea = ref(null);
 
 onMounted(() => {
-    window.addEventListener("keydown", handleEscape);
+    document.addEventListener("keydown", handleEscape);
     nextTick(() => {
         taskTitleInput.value?.focus();
     });
@@ -130,7 +117,7 @@ const resetForm = () => {
 };
 
 onUnmounted(() => {
-    window.removeEventListener("keydown", handleEscape);
+    document.removeEventListener("keydown", handleEscape);
 });
 </script>
 

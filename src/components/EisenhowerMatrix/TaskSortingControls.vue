@@ -1,67 +1,49 @@
 <template>
-    <div
-        class="flex items-center justify-between space-x-4 border-b border-gray-400 bg-slate-200 bg-opacity-50 px-4 py-2 text-gray-500"
-    >
-        <!-- Sort by -->
-        <div class="flex items-center space-x-2">
-            <span class="text-sm">Sort by:</span>
-            <div class="btn-group" role="group">
-                <button
-                    @click="updateSortBy('dateCreated')"
-                    title="Date Created"
-                    type="button"
-                    class="border-r border-gray-300 px-2 hover:bg-blue-50"
-                    :class="{
-                        'active bg-blue-100 font-medium text-blue-500':
-                            sortBy === 'dateCreated',
-                    }"
-                >
-                    <CalendarIcon class="h-4 w-4" />
-                </button>
-                <button
-                    @click="updateSortBy('priority')"
-                    type="button"
-                    title="Priority"
-                    class="px-2 hover:bg-blue-50"
-                    :class="{
-                        'active bg-blue-100 font-bold text-blue-500':
-                            sortBy === 'priority',
-                    }"
-                >
-                    <span class="text-xs">#p</span>
-                </button>
-            </div>
-        </div>
-        <!-- Order -->
-        <div class="flex items-center space-x-2">
-            <span class="text-sm">Order:</span>
-            <div class="btn-group" role="group">
-                <button
-                    @click="updateSortOrder('asc')"
-                    type="button"
-                    title="Ascending"
-                    class="border-r border-gray-300 px-2 hover:bg-blue-50"
-                    :class="{
-                        'active bg-blue-100 font-medium text-blue-500':
-                            sortOrder === 'asc',
-                    }"
-                >
-                    <ArrowUpIcon class="h-4 w-4" />
-                </button>
-                <button
-                    @click="updateSortOrder('desc')"
-                    type="button"
-                    title="Descending"
-                    class="px-1 py-1 hover:bg-blue-50"
-                    :class="{
-                        'active bg-blue-100 font-medium text-blue-500':
-                            sortOrder === 'desc',
-                    }"
-                >
-                    <ArrowDownIcon class="h-4 w-4" />
-                </button>
-            </div>
-        </div>
+    <div class="flex items-center space-x-1">
+        <!-- Sorting controls -->
+        <span class="text-sm">Sort by:</span>
+        <!-- date created -->
+        <button
+            @click="toggleSort('dateCreated')"
+            title="Date Created"
+            type="button"
+            class="flex items-center space-x-1 rounded px-2 py-1 transition-all duration-300 hover:bg-blue-100"
+            :class="{
+                'font-medium text-blue-500 ring-1 ring-blue-500':
+                    sortBy === 'dateCreated',
+            }"
+        >
+            <CalendarIcon class="h-4 w-4" />
+            <ArrowUpIcon
+                v-if="sortBy === 'dateCreated' && sortOrder === 'asc'"
+                class="h-3 w-3"
+            />
+            <ArrowDownIcon
+                v-if="sortBy === 'dateCreated' && sortOrder === 'desc'"
+                class="h-3 w-3"
+            />
+        </button>
+        <!-- priority -->
+        <button
+            @click="toggleSort('priority')"
+            type="button"
+            title="Priority"
+            class="flex items-center space-x-1 rounded px-2 py-1 transition-all duration-300 hover:bg-blue-100"
+            :class="{
+                'font-medium text-blue-500 ring-1 ring-blue-500':
+                    sortBy === 'priority',
+            }"
+        >
+            <span class="text-xs font-bold">#p</span>
+            <ArrowUpIcon
+                v-if="sortBy === 'priority' && sortOrder === 'asc'"
+                class="h-3 w-3"
+            />
+            <ArrowDownIcon
+                v-if="sortBy === 'priority' && sortOrder === 'desc'"
+                class="h-3 w-3"
+            />
+        </button>
     </div>
 </template>
 
@@ -89,41 +71,26 @@ const emit = defineEmits(["update:sortBy", "update:sortOrder"]);
 const sortBy = ref(props.initialSortBy);
 const sortOrder = ref(props.initialSortOrder);
 
-const updateSortBy = (newSortBy) => {
-    sortBy.value = newSortBy;
-    emit("update:sortBy", newSortBy);
-};
-
-const updateSortOrder = (newSortOrder) => {
-    sortOrder.value = newSortOrder;
-    emit("update:sortOrder", newSortOrder);
+const toggleSort = (newSortBy) => {
+    if (sortBy.value === newSortBy) {
+        // Toggle sort order if the same sort type is clicked
+        sortOrder.value = sortOrder.value === "asc" ? "desc" : "asc";
+    } else {
+        // Set new sort type and default to descending order
+        sortBy.value = newSortBy;
+        sortOrder.value = "desc";
+    }
+    emit("update:sortBy", sortBy.value);
+    emit("update:sortOrder", sortOrder.value);
 };
 </script>
 
 <style scoped>
-.btn-group {
-    display: inline-flex;
-    border: 1px solid #d1d5db;
-    border-radius: 0.25rem;
-    overflow: hidden;
+button {
+    transition: all 0.2s ease-in-out;
 }
 
-.btn-group button {
-    border: none;
-    border-radius: 0;
-    background-color: transparent;
-}
-
-.btn-group button:not(:last-child) {
-    border-right: 1px solid #d1d5db;
-}
-
-.btn-group button.active {
-    background-color: #e5e7eb;
-    color: #3b82f6;
-}
-
-.btn-group button:hover:not(.active) {
-    background-color: #f3f4f6;
+button:hover {
+    transform: scale(1.05);
 }
 </style>
