@@ -1,10 +1,12 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 // import { useLocalStorage } from "@vueuse/core";
-import { dummyTasks, type Task } from "./dummyTasks";
-import { dummyTasksEmptyDescriptions } from "./dummyTasksEmptyDescriptions";
+import { dummyTasks } from "./dummyTasks";
+// import { dummyTasksEmptyDescriptions } from "./dummyTasks";
+import type { Task } from "./dummyTasks";
+import { useNotificationStore } from "./notificationStore";
 
-// interface Task {
+// export interface Task {
 //     id: string;
 //     title: string;
 //     description: string;
@@ -17,19 +19,16 @@ import { dummyTasksEmptyDescriptions } from "./dummyTasksEmptyDescriptions";
 
 export const useTaskStore = defineStore("task", () => {
     // const tasks = useLocalStorage<Task[]>("eisenhower-tasks", dummyTasks);
-    // const tasks = ref<Task[]>(dummyTasks);
-    const tasks = ref<Task[]>(dummyTasksEmptyDescriptions);
-    const addTask = (
-        task: Omit<Task, "id" | "dateCreated" | "quadrant">,
-        quadrant: string = "four",
-    ) => {
-        const newTask: Task = {
-            ...task,
-            id: generateUniqueId(),
-            dateCreated: new Date(),
-            quadrant: quadrant,
-        };
-        tasks.value.push(newTask);
+    // const tasks = ref<Task[]>(dummyTasksEmptyDescriptions);
+    const tasks = ref<Task[]>(dummyTasks);
+    const notificationStore = useNotificationStore();
+
+    const addTask = (task: Task) => {
+        tasks.value.push(task);
+        notificationStore.showNotification(
+            "success",
+            "Task has been added to the list",
+        );
     };
 
     const updateTask = (updatedTask: Task) => {
@@ -37,23 +36,31 @@ export const useTaskStore = defineStore("task", () => {
             (task) => task.id === updatedTask.id,
         );
         if (index !== -1) {
-            tasks.value[index] = updatedTask;
+            const oldTask = tasks.value[index];
+            if (
+                oldTask.title !== updatedTask.title ||
+                oldTask.description !== updatedTask.description
+            ) {
+                tasks.value[index] = updatedTask;
+                notificationStore.showNotification(
+                    "success",
+                    "Task has been updated",
+                );
+            }
         }
     };
 
     const deleteTask = (taskId: string) => {
         tasks.value = tasks.value.filter((task) => task.id !== taskId);
+        notificationStore.showNotification("success", "Task has been deleted");
     };
 
-    const moveTask = (taskId: string, newQuadrant: string) => {
-        const taskIndex = tasks.value.findIndex(task => task.id === taskId);
-        if (taskIndex !== -1) {
-            const task = tasks.value[taskIndex];
-            task.quadrant = newQuadrant;
-            // Remove the task from its current position and add it to the beginning of the array
-            tasks.value.splice(taskIndex, 1);
-            tasks.value.unshift(task);
-        }
+    const moveTask = (task: Task, newQuadrant: string) => {
+        task.quadrant = newQuadrant;
+        notificationStore.showNotification(
+            "success",
+            "Task has been moved to the new quadrant",
+        );
     };
 
     const toggleTaskCompletion = (taskId: string) => {
@@ -62,6 +69,10 @@ export const useTaskStore = defineStore("task", () => {
             task.isCompleted = !task.isCompleted;
             task.dateCompleted = task.isCompleted ? new Date() : null;
         }
+        notificationStore.showNotification(
+            "success",
+            "Task has been completed",
+        );
     };
 
     const tasksByQuadrant = computed(() => {
@@ -72,10 +83,6 @@ export const useTaskStore = defineStore("task", () => {
             four: tasks.value.filter((task) => task.quadrant === "four"),
         };
     });
-
-    const generateUniqueId = () => {
-        return Date.now().toString(36) + Math.random().toString(36).slice(2);
-    };
 
     const deleteAllTasks = () => {
         console.log("Deleting all tasks");

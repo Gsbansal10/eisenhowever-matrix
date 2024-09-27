@@ -1,32 +1,33 @@
 <template>
     <div class="app-container mx-auto mt-2">
+        <MinorNotifications />
         <!-- <button
-            class="rounded-md bg-red-500 p-2 text-white hover:bg-red-400 active:bg-red-700 my-2"
+            class="delete-all-tasks-button rounded-md bg-red-500 p-2 text-white hover:bg-red-400 active:bg-red-700 my-2"
             @click="deleteAllTasks"
         >
             Delete All Tasks
         </button> -->
 
         <div
-            class="s mx-auto grid max-h-[calc(100vh-40px)] max-w-[800px] grid-cols-1 gap-1 md:grid-cols-[30px_1fr_1fr]"
+            class="eisenhower-matrix-container mx-auto grid max-h-[calc(100vh-40px)] max-w-[800px] grid-cols-1 gap-1 md:grid-cols-[30px_1fr_1fr]"
         >
             <h3
-                class="col-start-2 hidden text-center text-2xl font-bold uppercase md:block"
+                class="urgent-tasks-header col-start-2 hidden text-center text-2xl font-bold uppercase text-slate-400 md:block"
             >
                 Urgent
             </h3>
             <h3
-                class="col-start-3 hidden text-center text-2xl font-bold uppercase md:block"
+                class="not-urgent-tasks-header col-start-3 hidden text-center text-2xl font-bold uppercase text-slate-400 md:block"
             >
                 Not Urgent
             </h3>
             <h3
-                class="vertical-text row-start-2 hidden text-center text-2xl font-bold uppercase tracking-widest md:block"
+                class="important-tasks-header vertical-text row-start-2 hidden text-center text-2xl font-bold uppercase tracking-widest text-slate-400 md:block"
             >
                 Important
             </h3>
             <h3
-                class="vertical-text row-start-3 hidden cursor-vertical-text text-center text-2xl font-bold uppercase tracking-widest md:block"
+                class="not-important-tasks-header vertical-text row-start-3 hidden cursor-vertical-text text-center text-2xl font-bold uppercase tracking-widest text-slate-400 md:block"
             >
                 Not Important
             </h3>
@@ -35,30 +36,30 @@
             >
                 <!-- 1. Urgent & Important -->
                 <QuadrantComponent
-                    title="Urgent & Important"
-                    bgColor="bg-red-100 bg-opacity-50 border-red-600 border rounded-[20px] sm:rounded-none sm:rounded-tl-[20px] overflow-hidden"
-                    class="red"
+                    class="urgent-important-quadrant quadrant"
+                    quadrant-title="Urgent & Important"
+                    bgColor="border-red-600 border rounded-[20px] sm:rounded-none sm:rounded-tl-[20px] overflow-hidden"
                     quadrant="one"
                 />
                 <!-- 2. Not Urgent & Important -->
                 <QuadrantComponent
-                    title="Important but Not Urgent"
-                    bgColor="bg-green-100 bg-opacity-50 border-green-600 border rounded-[20px] sm:rounded-none sm:rounded-tr-[20px] overflow-hidden"
-                    class="blue"
+                    class="not-urgent-important-quadrant quadrant"
+                    quadrant-title="Important but Not Urgent"
+                    bgColor="border-green-600 border rounded-[20px] sm:rounded-none sm:rounded-tr-[20px] overflow-hidden"
                     quadrant="two"
                 />
                 <!-- 3. Urgent & Not Important -->
                 <QuadrantComponent
-                    title="Urgent but Not Important"
-                    bgColor="bg-yellow-100 bg-opacity-50 border-yellow-600 border rounded-[20px] sm:rounded-none sm:rounded-bl-[20px] overflow-hidden"
-                    class="green"
+                    class="urgent-not-important-quadrant quadrant"
+                    quadrant-title="Urgent but Not Important"
+                    bgColor="border-yellow-600 border rounded-[20px] sm:rounded-none sm:rounded-bl-[20px] overflow-hidden"
                     quadrant="three"
                 />
                 <!-- 4. Not Urgent & Not Important -->
                 <QuadrantComponent
-                    title="Not Urgent & Not Important"
-                    bgColor="bg-gray-100 bg-opacity-50 border-gray-600 border rounded-[20px] sm:rounded-none sm:rounded-br-[20px] overflow-hidden"
-                    class="golden"
+                    class="not-urgent-not-important-quadrant quadrant"
+                    quadrant-title="Not Urgent & Not Important"
+                    bgColor="border-gray-600 border rounded-[20px] sm:rounded-none sm:rounded-br-[20px] overflow-hidden"
                     quadrant="four"
                 />
             </div>
@@ -66,15 +67,16 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import QuadrantComponent from "./components/EisenhowerMatrix/QuadrantComponent.vue";
-import { useTaskStore } from "@/stores/taskStore";
+import MinorNotifications from "./components/EisenhowerMatrix/MinorNotifications.vue";
+// import { useTaskStore } from "@/stores/taskStore";
 
-const taskStore = useTaskStore();
+// const taskStore = useTaskStore();
 
-const deleteAllTasks = () => {
-    taskStore.deleteAllTasks(); // Call the function to delete all tasks
-};
+// const deleteAllTasks = () => {
+//     taskStore.deleteAllTasks(); // Call the function to delete all tasks
+// };
 </script>
 
 <style>
@@ -82,9 +84,16 @@ const deleteAllTasks = () => {
     writing-mode: vertical-rl; /* sets the text direction */
     transform: rotate(180deg);
 }
+.eisenhower-matrix-container {
+    /* background-image: url("../src/assets/tree.jpg"); */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
 
 .quadrant {
     background-size: cover;
+    backdrop-filter: blur(30px);
     /* background-position: calc(-30px) calc(-30px); */
     background-repeat: no-repeat;
     position: relative; /* Establish a positioning context */

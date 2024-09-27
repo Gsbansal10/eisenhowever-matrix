@@ -1,8 +1,15 @@
 <template>
     <div
-        class="flex h-full snap-y snap-mandatory flex-col overflow-y-auto"
+        class="task-list drop-zone flex h-full min-h-[300px] min-w-[300px] snap-y snap-mandatory flex-col overflow-y-auto"
+        :class="{
+            'active-dropzone': isDraggedOver && dragSourceQuadrant !== quadrant,
+        }"
         tabindex="0"
-        @keydown.stop="handleKeyDown"
+        @drop="onDrop($event, quadrant)"
+        @dragover.prevent="onDragOver"
+        @dragenter.prevent="onDragEnter"
+        @dragleave="onDragLeave"
+        ref="taskListContainer"
     >
         <transition-group name="fade" tag="div" mode="out-in">
             <TaskItem
@@ -11,17 +18,22 @@
                 :task="task"
                 :index="index"
                 @toggleCompletion="toggleTaskCompletion"
-                @toggleSelectedTask="toggleSelectedTask"
-                :isSelected="task.isSelected"
+                class="drag-el"
+                :class="{ dragging: draggedTaskId === task.id }"
+                draggable="true"
+                @dragstart="startDrag($event, task)"
+                @dragend="endDrag"
             />
         </transition-group>
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useTaskStore } from "@/stores/taskStore";
 import TaskItem from "./TaskItem.vue";
-import { computed, ref, onMounted, onUnmounted } from "vue";
+import { computed, ref, watch, nextTick } from "vue";
+import { storeToRefs } from "pinia";
+import type { Task } from "@/stores/taskStore";
 
 const props = defineProps({
     quadrant: {
@@ -30,110 +42,35 @@ const props = defineProps({
     },
     sortBy: {
         type: String,
-        required: true,
+        required: false,
+        default: "dateCreated",
     },
     sortOrder: {
         type: String,
-        required: true,
+        required: false,
+        default: "desc",
     },
 });
 
 const taskStore = useTaskStore();
-const tasks = computed(() => taskStore.tasksByQuadrant[props.quadrant]);
+const { tasksByQuadrant } = storeToRefs(taskStore);
+const tasks = computed(() => tasksByQuadrant.value[props.quadrant]);
 
-const toggleTaskCompletion = (taskId) => {
+const isDraggedOver = ref(false);
+const draggedTaskId = ref<string | null>(null);
+const dragCounter = ref(0);
+const dragSourceQuadrant = ref<string | null>(null);
+
+const taskListContainer = ref<HTMLElement | null>(null);
+const lastAddedTaskId = ref<string | null>(null);
+
+const toggleTaskCompletion = (taskId: string) => {
     taskStore.toggleTaskCompletion(taskId);
 };
-
-const selectedTask = ref(null);
-
-const toggleSelectedTask = (task) => {
-    if (task.isSelected) {
-        task.isSelected = false;
-        selectedTask.value = null;
-    } else {
-        taskStore.tasks.forEach((t) => {
-            t.isSelected = false;
-        });
-        task.isSelected = true;
-        selectedTask.value = task;
-    }
-};
-
-const handleKeyDown = (event) => {
-    if (!selectedTask.value || !event.metaKey) return;
-
-    const currentQuadrant = selectedTask.value.quadrant;
-    let newQuadrant = currentQuadrant;
-
-    switch (event.key) {
-        case "ArrowUp":
-            event.preventDefault();
-            if (currentQuadrant === "three") newQuadrant = "one";
-            if (currentQuadrant === "four") newQuadrant = "two";
-            break;
-        case "ArrowDown":
-            event.preventDefault();
-            if (currentQuadrant === "one") newQuadrant = "three";
-            if (currentQuadrant === "two") newQuadrant = "four";
-            break;
-        case "ArrowLeft":
-            event.preventDefault();
-            if (currentQuadrant === "two") newQuadrant = "one";
-            if (currentQuadrant === "four") newQuadrant = "three";
-            break;
-        case "ArrowRight":
-            event.preventDefault();
-            if (currentQuadrant === "one") newQuadrant = "two";
-            if (currentQuadrant === "three") newQuadrant = "four";
-            break;
-    }
-
-    if (newQuadrant !== currentQuadrant) {
-        taskStore.moveTask(selectedTask.value.id, newQuadrant);
-        selectedTask.value.quadrant = newQuadrant;
-    }
-
-    if (event.key === "Backspace") {
-        const quadrant = selectedTask.value.quadrant;
-        const tasksInSameQuadrant = taskStore.tasks.filter(
-            (t) => t.quadrant === quadrant,
-        );
-        const currentIndex = tasksInSameQuadrant.findIndex(
-            (t) => t.id === selectedTask.value.id,
-        );
-
-        taskStore.deleteTask(selectedTask.value.id);
-
-        if (currentIndex < tasksInSameQuadrant.length - 1) {
-            selectedTask.value = tasksInSameQuadrant[currentIndex + 1];
-        } else if (currentIndex > 0) {
-            selectedTask.value = tasksInSameQuadrant[currentIndex - 1];
-        }
-
-        if (selectedTask.value) {
-            selectedTask.value.isSelected = true;
-        }
-    }
-};
-
-onMounted(() => {
-    window.addEventListener("keydown", handleKeyDown);
-});
-
-onUnmounted(() => {
-    window.removeEventListener("keydown", handleKeyDown);
-});
 
 const sortedTasks = computed(() => {
     const sortedTasks = tasks.value.slice();
     sortedTasks.sort((a, b) => {
-        if (a.isCompleted !== b.isCompleted) {
-            return a.isCompleted ? 1 : -1;
-        }
-        if (a.isCompleted && b.isCompleted) {
-            return b.dateCompleted - a.dateCompleted;
-        }
         if (props.sortBy === "dateCreated") {
             return props.sortOrder === "asc"
                 ? a.dateCreated - b.dateCreated
@@ -143,25 +80,118 @@ const sortedTasks = computed(() => {
                 ? a.priority - b.priority
                 : b.priority - a.priority;
         }
+        return 0;
     });
     return sortedTasks;
 });
+
+const startDrag = (event: DragEvent, item: Task) => {
+    if (event.dataTransfer) {
+        event.dataTransfer.dropEffect = "move";
+        event.dataTransfer.effectAllowed = "move";
+        event.dataTransfer.setData("taskId", item.id);
+        draggedTaskId.value = item.id;
+        dragSourceQuadrant.value = props.quadrant;
+    }
+};
+
+const endDrag = () => {
+    draggedTaskId.value = null;
+    dragSourceQuadrant.value = null;
+};
+
+const onDragOver = (event: DragEvent) => {
+    if (event.dataTransfer) {
+        event.dataTransfer.dropEffect = "move";
+    }
+};
+
+const onDragEnter = (event: DragEvent) => {
+    event.preventDefault();
+    dragCounter.value++;
+    if (dragSourceQuadrant.value !== props.quadrant) {
+        isDraggedOver.value = true;
+    }
+};
+
+const onDragLeave = (event: DragEvent) => {
+    event.preventDefault();
+    dragCounter.value--;
+    if (dragCounter.value === 0) {
+        isDraggedOver.value = false;
+    }
+};
+
+const onDrop = (event: DragEvent, quadrant: string) => {
+    const taskId = event.dataTransfer?.getData("taskId");
+    const task = taskStore.tasks.find((t) => t.id === taskId);
+    if (task) {
+        taskStore.moveTask(task, quadrant);
+        nextTick(() => {
+            scrollToTask(task.id);
+        });
+    }
+    isDraggedOver.value = false;
+    dragCounter.value = 0;
+    dragSourceQuadrant.value = null;
+};
+
+// Watch for changes in the tasks array
+watch(
+    () => tasks.value,
+    (newTasks, oldTasks) => {
+        if (newTasks.length > oldTasks.length) {
+            // A new task was added or moved to this quadrant
+            const addedTask = newTasks.find(
+                (task) => !oldTasks.some((oldTask) => oldTask.id === task.id),
+            );
+            if (addedTask) {
+                lastAddedTaskId.value = addedTask.id;
+                nextTick(() => {
+                    scrollToTask(addedTask.id);
+                });
+            }
+        }
+    },
+    { deep: true },
+);
+
+const scrollToTask = (taskId: string) => {
+    if (taskListContainer.value) {
+        const taskElement = taskListContainer.value.querySelector(
+            `[data-task-id="${taskId}"]`,
+        );
+        if (taskElement) {
+            const taskFormHeight =
+                document.querySelector(".task-form-container")?.clientHeight ||
+                0;
+            const scrollOffset =
+                taskElement.getBoundingClientRect().top +
+                taskListContainer.value.scrollTop -
+                taskListContainer.value.getBoundingClientRect().top -
+                taskFormHeight -
+                10; // 10px extra padding
+
+            taskListContainer.value.scrollTo({
+                top: scrollOffset,
+                behavior: "smooth",
+            });
+        }
+    }
+};
 </script>
 
 <style scoped>
 div {
     outline: none;
 }
-
 .fade-enter-active,
 .fade-leave-active {
     transition: all 0.5s ease;
 }
-
 .fade-move {
     transition: transform 0.5s;
 }
-
 .fade-leave-active {
     position: absolute;
 }
@@ -169,5 +199,18 @@ div {
 .fade-leave-to {
     opacity: 0;
     transform: translateX(50px);
+}
+.active-dropzone {
+    background-color: rgba(0, 0, 0, 0.04);
+    border: 2px dashed #007bff;
+    transition: all 0.1s;
+}
+
+.dragging {
+    opacity: 0.5;
+    transform: scale(0.95);
+    transition:
+        opacity 0.3s,
+        transform 0.3s;
 }
 </style>

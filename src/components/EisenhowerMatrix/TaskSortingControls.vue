@@ -1,5 +1,5 @@
 <template>
-    <div class="flex items-center space-x-1">
+    <div class="task-sorting-controls flex items-center space-x-1">
         <!-- Sorting controls -->
         <span class="text-sm">Sort by:</span>
         <!-- date created -->
@@ -7,7 +7,7 @@
             @click="toggleSort('dateCreated')"
             title="Date Created"
             type="button"
-            class="flex items-center space-x-1 rounded px-2 py-1 transition-all duration-300 hover:bg-blue-100"
+            class="date-created-sort-button flex items-center space-x-1 rounded px-2 py-1 transition-all duration-300 hover:bg-blue-100"
             :class="{
                 'font-medium text-blue-500 ring-1 ring-blue-500':
                     sortBy === 'dateCreated',
@@ -28,7 +28,7 @@
             @click="toggleSort('priority')"
             type="button"
             title="Priority"
-            class="flex items-center space-x-1 rounded px-2 py-1 transition-all duration-300 hover:bg-blue-100"
+            class="priority-sort-button flex items-center space-x-1 rounded px-2 py-1 transition-all duration-300 hover:bg-blue-100"
             :class="{
                 'font-medium text-blue-500 ring-1 ring-blue-500':
                     sortBy === 'priority',
@@ -47,7 +47,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from "vue";
 import {
     ArrowUpIcon,

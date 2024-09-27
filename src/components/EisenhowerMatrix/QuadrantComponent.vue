@@ -1,10 +1,21 @@
 <template>
-    <div :class="bgColor" class="quadrant">
-        <h3 class="mt-2 px-4 text-base font-bold text-gray-600 md:hidden">
+    <div :class="bgColor" class="quadrant-component quadrant relative ">
+        <h3
+            class="quadrant-title mt-2 px-4 text-base font-bold text-gray-600 md:hidden"
+        >
             {{ title }}
         </h3>
         <div
-            class="flex items-center justify-between border-b border-gray-400 bg-slate-200 bg-opacity-50 px-4 py-2 text-gray-500"
+            class="quadrant-controls sticky top-0 z-10 flex items-center justify-between bg-slate-50 bg-opacity-50 px-4 py-2 shadow-md"
+            :class="{
+                'border-b-[1px] border-t-4 border-red-500': quadrant === 'one',
+                'border-b-[1px] border-t-4 border-green-500':
+                    quadrant === 'two',
+                'border-b-[1px] border-t-4 border-yellow-500':
+                    quadrant === 'three',
+                'border-b-[1px] border-t-4 border-gray-500':
+                    quadrant === 'four',
+            }"
         >
             <TaskSortingControls
                 :initial-sort-by="sortBy"
@@ -17,7 +28,7 @@
                 @openTaskForm="isTaskFormOpen = true"
             />
         </div>
-        <div>
+        <div class="quadrant-content">
             <transition name="fade">
                 <TaskForm
                     v-if="isTaskFormOpen"
@@ -36,7 +47,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from "vue";
 import TaskList from "./TaskList.vue";
 import AddTaskButton from "./AddTaskButton.vue";
@@ -46,15 +57,16 @@ import TaskForm from "./TaskForm.vue";
 defineProps({
     title: String,
     bgColor: String,
-    quadrant: String,
+    quadrant: {
+        type: String,
+        required: true,
+    },
 });
 
 const isTaskFormOpen = ref(false);
-
 const closeTaskForm = () => {
     isTaskFormOpen.value = false;
 };
-
 const addTask = (task) => {
     console.log("Task added:", task);
 };
@@ -63,18 +75,22 @@ const sortOrder = ref("desc");
 </script>
 
 <style scoped>
-.quadrant {
-    max-height: 400px;
-    /* min-height: 300px; */
+.quadrant-component {
+    display: flex;
+    flex-direction: column;
+    height: 400px;
+}
+
+.quadrant-content {
+    flex-grow: 1;
     overflow-y: auto;
 }
 
 .tasklist {
-    max-height: 300px;
+    height: 100%;
     scroll-behavior: smooth;
     scrollbar-width: none;
     overflow-y: scroll;
-    /* padding-bottom: 30px; */
 }
 
 .fade-enter-active,
