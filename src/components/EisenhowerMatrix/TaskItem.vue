@@ -2,6 +2,9 @@
     <div :data-task-id="task.id" class="task-item snap-start">
         <div
             class="task-item-content group grid select-none grid-cols-[auto_1fr_auto] items-center gap-x-2 border-b-[1px] border-gray-200 px-4 py-2 transition duration-200 hover:bg-gray-300 hover:bg-opacity-20"
+            :class="{
+                'bg-slate-50': task.isCompleted,
+            }"
         >
             <!-- Completion button -->
             <button
@@ -26,7 +29,7 @@
                     :contenteditable="isEditing && editingField === 'title'"
                     class="task-title flex cursor-text items-center text-black outline-none"
                     :class="{
-                        'text-gray-400': task.isCompleted,
+                        'text-slate-400': task.isCompleted,
                         'cursor-auto rounded':
                             isEditing && editingField === 'title',
                     }"
@@ -45,9 +48,9 @@
                     :contenteditable="
                         isEditing && editingField === 'description'
                     "
-                    class="task-description col-span-1 col-start-2 cursor-text text-[12px] text-gray-500 outline-none"
+                    class="task-description col-span-1 col-start-2 cursor-text text-[12px] outline-none"
                     :class="{
-                        'text-gray-400': task.isCompleted,
+                        'text-slate-400': task.isCompleted,
                         'cursor-auto rounded':
                             isEditing && editingField === 'description',
                     }"
@@ -118,8 +121,10 @@ import { ref, onMounted, onBeforeUnmount } from "vue";
 import { TrashIcon, CalendarIcon } from "@heroicons/vue/24/outline";
 import { useTaskStore } from "@/stores/taskStore";
 import type { Task } from "@/stores/dummyTasks";
+import { useNotificationStore } from "@/stores/notificationStore";
 
 const taskStore = useTaskStore();
+const notificationStore = useNotificationStore();
 
 const props = defineProps<{ task: Task }>();
 
@@ -167,6 +172,15 @@ const finishEditing = () => {
 
     const newTitle = titleRef.value?.textContent?.trim() || "";
     const newDescription = descriptionRef.value?.textContent?.trim() || "";
+
+    if (!newTitle) {
+        notificationStore.showNotification("error", "Task must have a title");
+        if (titleRef.value) {
+            titleRef.value.textContent = props.task.title;
+            focusElement(titleRef.value);
+        }
+        return;
+    }
 
     taskStore.updateTask({
         ...props.task,

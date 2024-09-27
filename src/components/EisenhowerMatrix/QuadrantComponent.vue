@@ -1,9 +1,9 @@
 <template>
-    <div :class="bgColor" class="quadrant-component quadrant relative ">
+    <div :class="bgColor" class="quadrant-component quadrant relative">
         <h3
             class="quadrant-title mt-2 px-4 text-base font-bold text-gray-600 md:hidden"
         >
-            {{ title }}
+            {{ quadrantTitle }}
         </h3>
         <div
             class="quadrant-controls sticky top-0 z-10 flex items-center justify-between bg-slate-50 bg-opacity-50 px-4 py-2 shadow-md"
@@ -32,9 +32,8 @@
             <transition name="fade">
                 <TaskForm
                     v-if="isTaskFormOpen"
-                    @close="closeTaskForm"
-                    @add-task="addTask"
                     :quadrant="quadrant"
+                    @close="closeTaskForm"
                 />
             </transition>
             <TaskList
@@ -55,7 +54,7 @@ import TaskSortingControls from "./TaskSortingControls.vue";
 import TaskForm from "./TaskForm.vue";
 
 defineProps({
-    title: String,
+    quadrantTitle: String,
     bgColor: String,
     quadrant: {
         type: String,
@@ -66,9 +65,6 @@ defineProps({
 const isTaskFormOpen = ref(false);
 const closeTaskForm = () => {
     isTaskFormOpen.value = false;
-};
-const addTask = (task) => {
-    console.log("Task added:", task);
 };
 const sortBy = ref("dateCreated");
 const sortOrder = ref("desc");

@@ -33,7 +33,7 @@ import { useTaskStore } from "@/stores/taskStore";
 import TaskItem from "./TaskItem.vue";
 import { computed, ref, watch, nextTick } from "vue";
 import { storeToRefs } from "pinia";
-import type { Task } from "@/stores/taskStore";
+import type { Task } from "@/stores/dummyTasks";
 
 const props = defineProps({
     quadrant: {
@@ -124,7 +124,7 @@ const onDragLeave = (event: DragEvent) => {
 
 const onDrop = (event: DragEvent, quadrant: string) => {
     const taskId = event.dataTransfer?.getData("taskId");
-    const task = taskStore.tasks.find((t) => t.id === taskId);
+    const task = taskStore.activeTasks.find((t) => t.id === taskId);
     if (task) {
         taskStore.moveTask(task, quadrant);
         nextTick(() => {

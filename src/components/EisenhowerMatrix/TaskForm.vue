@@ -1,5 +1,8 @@
 <template>
-    <div class="task-form-container sticky top-0 z-20 bg-white shadow-md">
+    <div
+        class="task-form-container sticky top-0 z-20 bg-white shadow-md"
+        ref="formContainer"
+    >
         <form
             @submit.prevent.stop="addTask"
             class="group cursor-pointer select-none border-b-[1px] border-gray-200 px-4 py-2 transition duration-200 hover:bg-gray-500 hover:bg-opacity-10"
@@ -51,6 +54,7 @@ const taskStore = useTaskStore();
 const taskTitle = ref("");
 const taskDescription = ref("");
 const priority = ref(0);
+const formContainer = ref<HTMLElement | null>(null);
 
 const props = defineProps({
     quadrant: {
@@ -64,29 +68,32 @@ const props = defineProps({
 });
 
 const addTask = () => {
-    const priorityMatch = taskTitle.value.trim().match(/\bp(\d+)\b/);
-    priority.value = priorityMatch ? parseInt(priorityMatch[1]) : 0;
-    const task = {
-        id: generateUniqueId(),
-        title: taskTitle.value,
-        description: taskDescription.value,
-        quadrant: props.quadrant,
-        priority: priority.value,
-        isCompleted: false,
-        dateCompleted: null,
-        dateCreated: new Date(),
-        isDeleted: false,
-    };
-    taskStore.addTask(task);
-    emit("taskAdded", task.id);
-    resetForm();
+    if (taskTitle.value.trim()) {
+        const priorityMatch = taskTitle.value.trim().match(/\bp(\d+)\b/);
+        priority.value = priorityMatch ? parseInt(priorityMatch[1]) : 0;
+        const task = {
+            id: generateUniqueId(),
+            title: taskTitle.value,
+            description: taskDescription.value,
+            quadrant: props.quadrant,
+            priority: priority.value,
+            isCompleted: false,
+            dateCompleted: null,
+            dateCreated: new Date(),
+            isDeleted: false,
+        };
+        taskStore.addTask(task);
+        // emit("taskAdded", task.id);
+        resetForm();
+    }
 };
 
 const generateUniqueId = () => {
     return Date.now().toString(36) + Math.random().toString(36).slice(2);
 };
 
-const handleEscape = (e) => {
+const handleEscape = (e: KeyboardEvent) => {
+    console.log(e.key);
     if (e.key === "Escape") {
         closeForm();
     }
@@ -95,8 +102,19 @@ const handleEscape = (e) => {
 const taskTitleInput = ref<HTMLInputElement | null>(null);
 const taskDescriptionTextarea = ref<HTMLTextAreaElement | null>(null);
 
+const handleClickOutside = (event: MouseEvent) => {
+    if (
+        formContainer.value &&
+        !formContainer.value.contains(event.target as Node)
+    ) {
+        addTask();
+        closeForm();
+    }
+};
+
 onMounted(() => {
     document.addEventListener("keydown", handleEscape);
+    document.addEventListener("mousedown", handleClickOutside);
     nextTick(() => {
         taskTitleInput.value?.focus();
     });
@@ -114,6 +132,7 @@ const resetForm = () => {
 
 onUnmounted(() => {
     document.removeEventListener("keydown", handleEscape);
+    document.removeEventListener("mousedown", handleClickOutside);
 });
 </script>
 
