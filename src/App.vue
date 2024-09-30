@@ -70,15 +70,6 @@
 <script setup lang="ts">
 import QuadrantComponent from "./components/EisenhowerMatrix/QuadrantComponent.vue";
 import MinorNotifications from "./components/EisenhowerMatrix/MinorNotifications.vue";
-import { useTaskStore } from "@/stores/taskStore";
-const taskStore = useTaskStore();
-// import { useTaskStore } from "@/stores/taskStore";
-
-// const taskStore = useTaskStore();
-
-// const deleteAllTasks = () => {
-//     taskStore.deleteAllTasks(); // Call the function to delete all tasks
-// };
 </script>
 
 <style>

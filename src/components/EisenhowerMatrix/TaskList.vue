@@ -1,6 +1,6 @@
 <template>
     <div
-        class="task-list drop-zone flex h-full min-h-[300px] min-w-[300px] snap-y snap-mandatory flex-col overflow-y-auto"
+        class="drop-zone flex h-full min-w-[300px] snap-y snap-mandatory flex-col overflow-y-auto"
         :class="{
             'active-dropzone': isDraggedOver && dragSourceQuadrant !== quadrant,
         }"
@@ -79,6 +79,10 @@ const sortedTasks = computed(() => {
             return props.sortOrder === "asc"
                 ? a.priority - b.priority
                 : b.priority - a.priority;
+        } else if (props.sortBy === "completed") {
+            return props.sortOrder === "asc"
+                ? a.isCompleted - b.isCompleted
+                : b.isCompleted - a.isCompleted;
         }
         return 0;
     });

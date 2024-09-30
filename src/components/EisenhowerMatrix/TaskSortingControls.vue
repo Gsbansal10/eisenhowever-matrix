@@ -44,6 +44,27 @@
                 class="h-3 w-3"
             />
         </button>
+        <!-- completed -->
+        <button
+            @click="toggleSort('completed')"
+            type="button"
+            title="Completed"
+            class="completed-sort-button flex items-center space-x-1 rounded px-2 py-1 transition-all duration-300 hover:bg-blue-100"
+            :class="{
+                'font-medium text-blue-500 ring-1 ring-blue-500':
+                    sortBy === 'completed',
+            }"
+        >
+            <span class="text-sm font-bold">☑︎</span>
+            <ArrowUpIcon
+                v-if="sortBy === 'completed' && sortOrder === 'asc'"
+                class="h-3 w-3"
+            />
+            <ArrowDownIcon
+                v-if="sortBy === 'completed' && sortOrder === 'desc'"
+                class="h-3 w-3"
+            />
+        </button>
     </div>
 </template>
 

@@ -1,7 +1,7 @@
 <template>
     <div :data-task-id="task.id" class="task-item snap-start">
         <div
-            class="task-item-content group grid select-none grid-cols-[auto_1fr_auto] items-center gap-x-2 border-b-[1px] border-gray-200 px-4 py-2 transition duration-200 hover:bg-gray-300 hover:bg-opacity-20"
+            class="task-item-content group grid select-none grid-cols-[auto_1fr_auto] items-center gap-x-2 border-b-[0px] border-gray-200 px-4 py-2 transition duration-200 hover:bg-gray-300 hover:bg-opacity-20 hover:shadow"
             :class="{
                 'bg-slate-50': task.isCompleted,
             }"

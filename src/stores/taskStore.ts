@@ -1,8 +1,8 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 // import { useLocalStorage } from "@vueuse/core";
-import { dummyTasks } from "./dummyTasks";
-import { dummyTasksEmptyDescriptions } from "./dummyTasks";
+// import { dummyTasks } from "./dummyTasks";
+// import { dummyTasksEmptyDescriptions } from "./dummyTasks";
 import type { Task } from "./dummyTasks";
 import { useNotificationStore } from "./notificationStore";
 
@@ -19,9 +19,9 @@ import { useNotificationStore } from "./notificationStore";
 // }
 
 export const useTaskStore = defineStore("task", () => {
-    // const allTasks = ref<Task[]>([]);
+    const allTasks = ref<Task[]>([]);
     // const allTasks = ref<Task[]>(dummyTasks);
-    const allTasks = ref<Task[]>(dummyTasksEmptyDescriptions);
+    // const allTasks = ref<Task[]>(dummyTasksEmptyDescriptions);
     const notificationStore = useNotificationStore();
 
     const activeTasks = computed(() =>
@@ -89,10 +89,6 @@ export const useTaskStore = defineStore("task", () => {
             task.isCompleted = !task.isCompleted;
             task.dateCompleted = task.isCompleted ? new Date() : null;
         }
-        notificationStore.showNotification(
-            "success",
-            "Task has been completed",
-        );
     };
 
     const tasksByQuadrant = computed(() => {

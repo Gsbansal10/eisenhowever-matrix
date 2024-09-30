@@ -74,7 +74,7 @@ const sortOrder = ref("desc");
 .quadrant-component {
     display: flex;
     flex-direction: column;
-    height: 400px;
+    /* height: minmax(300px, 400px); */
 }
 
 .quadrant-content {
@@ -84,6 +84,8 @@ const sortOrder = ref("desc");
 
 .tasklist {
     height: 100%;
+    min-height: 300px;
+    max-height: 400px;
     scroll-behavior: smooth;
     scrollbar-width: none;
     overflow-y: scroll;
